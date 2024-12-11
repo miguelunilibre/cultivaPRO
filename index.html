@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CultivaPRO</title>
+    <link rel="icon" type="image/x-icon" href="../img/logo.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <i class="fas fa-seedling"></i>
+            <span class="logo-text">CultivaPRO</span>
+        </div>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" placeholder="Usuario" required>
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Contraseña" required>
+            </div>
+            
+            <div id="errorMessage" class="error-message">
+                Credenciales incorrectas. Por favor, intenta de nuevo.
+            </div>
+            
+            <button type="submit" class="btn">Iniciar Sesión</button>
+            
+            <div class="links">
+                <a href="#" id="forgotPassword">¿Olvidaste tu contraseña?</a>
+                <a href="#" id="register">Registrarse</a>
+            </div>
+            
+            <div class="separator">
+                <span>O continúa con</span>
+            </div>
+            
+            <div class="social-login">
+                <a href="#" class="google"><i class="fab fa-google"></i></a>
+                <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
+            </div>
+        </form>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+</html>
