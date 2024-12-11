@@ -1,0 +1,152 @@
+/* Estilos para el historial de planificaciones */
+.planifications-history {
+    margin-top: 40px;
+    padding: 30px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.planifications-history h3 {
+    color: var(--gray-800);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-100);
+}
+
+.planifications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.planification-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.planification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.planification-card h4 {
+    color: var(--primary-700);
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+}
+
+.planification-card p {
+    margin: 8px 0;
+    color: var(--gray-700);
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.planification-card strong {
+    color: var(--gray-800);
+}
+
+.planification-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--gray-200);
+}
+
+.btn-start-crop, 
+.btn-delete-plan {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-start-crop {
+    background-color: var(--primary-600);
+    color: white;
+}
+
+.btn-start-crop:hover {
+    background-color: var(--primary-700);
+}
+
+.btn-delete-plan {
+    background-color: #dc2626;
+    color: white;
+}
+
+.btn-delete-plan:hover {
+    background-color: #b91c1c;
+}
+
+/* Estado de la planificación */
+.planification-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.status-pending {
+    background-color: var(--primary-50);
+    color: var(--primary-700);
+}
+
+.status-in-progress {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .planifications-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .planification-card {
+        margin: 0 10px;
+    }
+}
+
+/* Eliminar los estilos relacionados con el buscador */
+.select-wrapper {
+    width: 100%;
+}
+
+#cultivo {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+}
+
+optgroup {
+    font-weight: bold;
+    color: #666;
+}
+
+option {
+    padding: 4px;
+    color: #333;
+}
+
+option:hover {
+    background-color: #f0f0f0;
+}

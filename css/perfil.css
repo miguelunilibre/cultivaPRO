@@ -1,0 +1,63 @@
+.profile-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+  }
+  
+  .profile-container .profile-icon {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 120px;
+    background-color: #4caf50;
+    border-radius: 50%;
+    background-image: url('https://www.example.com/profile-icon.png'); /* Sustituye con tu icono */
+    background-size: cover;
+    background-position: center;
+    border: 4px solid #fff;
+  }
+  
+  .profile-container h2 {
+    font-size: 24px;
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+    margin-top: 80px;
+  }
+  
+  .profile-container p {
+    font-size: 16px;
+    color: #666;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .profile-container .bio {
+    font-size: 14px;
+    color: #888;
+    margin-top: 10px;
+  }
+  
+  .profile-container button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  .profile-container button:hover {
+    background-color: #45a049;
+  }
+  

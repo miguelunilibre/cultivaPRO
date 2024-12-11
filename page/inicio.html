@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CultivaPro</title> <link rel="icon" type="image/x-icon" href="../img/logo.png">
+   
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/inicio.css">
+    <link rel="stylesheet" href="../css/perfil.css">
+    <link rel="stylesheet" href="../css/tienda.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/planification.css">
+    <link rel="stylesheet" href="../css/calendar.css">
+    <link rel="stylesheet" href="../css/modal.css">
+    <link rel="stylesheet" href="../css/cart.css">
+</head>
+<body>
+    <div class="app">
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <img src="../img/logo.png" alt="Logo" class="logo">
+                <span class="brand-name">CultivaPro</span>
+            </div>
+            <div class="navbar-actions">
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+                <button id="logoutBtn" class="logout-btn" href="../index.html">
+                    <img src="../img/cerrar-sesion.png" alt="Cerrar sesión" class="logout-icon">
+                </button>
+            </div>
+        </nav>
+
+        <div class="main-container">
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <a href="#home" class="nav-item active" data-page="home">
+                        <img src="../img/inicio.png" alt="Inicio" class="nav-icon">
+                        <span>Inicio</span>
+                    </a>
+                    <a href="#calendar" class="nav-item" data-page="calendar"> <img src="../img/calendario.png" alt="Calendario" class="nav-icon"> <span>Calendario</span> </a>
+                    <a href="#crops" class="nav-item" data-page="crops">
+                        <img src="../img/cultivos.png" alt="Cultivos" class="nav-icon">
+                        <span>Cultivos</span>
+                    </a>
+                    <a href="#profile" class="nav-item" data-page="profile">
+                        <img src="../img/perfil.png" alt="Perfil" class="nav-icon">
+                        <span>Perfil</span>
+                    </a>
+                    <a href="#plan-sowing" class="nav-item" data-page="plan-sowing">
+                        <img src="../img/planificar.png" alt="Planificar Siembra" class="nav-icon">
+                        <span>Planificar Siembra</span>
+                    </a>
+                    <a href="#store" class="nav-item" data-page="store">
+                        <img src="../img/tienda.png" alt="Tienda" class="nav-icon">
+                        <span>Tienda</span>
+                    </a>
+                </nav>
+            </aside>
+
+            <main id="mainContent" class="main-content">
+                <!-- El contenido dinámico se cargará aquí -->
+                <section id="homeContent">
+                    <h1>Bienvenido a CultivaPro</h1>
+                    <p>CultivaPro es tu aliado para gestionar tus cultivos de manera eficiente y efectiva. ¡Comienza a planificar tus siembras y cosechas hoy mismo!</p>
+
+                    <div class="features">
+                        <div class="feature-item">
+                            <img src="../img/gestion-de-proyectos.png" alt="Gestión Fácil" class="feature-image" >
+                            <h3>Gestión Fácil</h3>
+                            <p>Organiza tus cultivos y tareas agrícolas de forma sencilla con herramientas intuitivas.</p>
+                        </div>
+                        <div class="feature-item">
+                            <img src="../img/dos.png" alt="Calendario Organizado" class="feature-image">
+                            <h3>Calendario Organizado</h3>
+                            <p>Consulta fechas importantes de siembra y cosecha en un calendario interactivo.</p>
+                        </div>
+                        <div class="feature-item">
+                            <img src="../img/tres.png" alt="Análisis de Datos" class="feature-image">
+                            <h3>Análisis de Datos</h3>
+                            <p>Obtén información clave sobre el rendimiento de tus cultivos.</p>
+                        </div>
+                    </div>
+                    <div class="cta-section">
+                        <h2>¡Comienza Ahora!</h2>
+                        <p>Planifica tu próxima siembra y cosecha de manera eficiente. ¡Explora las herramientas de CultivaPro y lleva tu agricultura al siguiente nivel!</p>
+                        <button class="cta-button">Planificar Siembra</button>
+                    </div>
+                </section>
+                
+                <section id="calendarContent" class="hidden">
+                    <h2>Calendario de Eventos</h2>
+                    <div id="calendar"></div>
+                </section>
+
+                <section id="profileContent" class="hidden">
+                    <h2>Mi Perfil</h2>
+                    <div class="profile-container">
+                        <form id="profileForm">
+                            <div class="form-group">
+                                <label for="nombre">Nombre:</label>
+                                <input type="text" id="nombre" name="nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="apellido">Apellido:</label>
+                                <input type="text" id="apellido" name="apellido" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Correo electrónico:</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="telefono">Teléfono:</label>
+                                <input type="tel" id="telefono" name="telefono">
+                            </div>
+                            <div class="form-group">
+                                <label for="finca">Nombre de la Finca:</label>
+                                <input type="text" id="finca" name="finca">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="save-btn">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+                
+                <section id="plan-sowingContent" class="hidden">
+                    <h2>Planificación de Siembra</h2>
+                    <form id="planSowingForm" class="plan-sowing-form">
+                        <div class="form-group">
+                            <label for="cultivo">Cultivo:</label>
+                            <select id="cultivo" name="cultivo" required>
+                                <option value="">Seleccione un cultivo</option>
+                                <optgroup label="Cereales">
+                                    <option value="arroz">Arroz</option>
+                                    <option value="maiz">Maíz</option>
+                                    <option value="sorgo">Sorgo</option>
+                                    <option value="trigo">Trigo</option>
+                                </optgroup>
+                                <optgroup label="Leguminosas">
+                                    <option value="frijol">Frijol</option>
+                                    <option value="arveja">Arveja</option>
+                                    <option value="soya">Soya</option>
+                                    <option value="garbanzo">Garbanzo</option>
+                                    <option value="habichuela">Habichuela</option>
+                                </optgroup>
+                                <optgroup label="Tubérculos">
+                                    <option value="papa">Papa</option>
+                                    <option value="yuca">Yuca</option>
+                                    <option value="batata">Batata</option>
+                                    <option value="name">Ñame</option>
+                                </optgroup>
+                                <optgroup label="Hortalizas">
+                                    <option value="tomate">Tomate</option>
+                                    <option value="cebolla">Cebolla</option>
+                                    <option value="zanahoria">Zanahoria</option>
+                                    <option value="pimenton">Pimentón</option>
+                                    <option value="lechuga">Lechuga</option>
+                                    <option value="repollo">Repollo</option>
+                                    <option value="brocoli">Brócoli</option>
+                                    <option value="coliflor">Coliflor</option>
+                                    <option value="espinaca">Espinaca</option>
+                                    <option value="pepino">Pepino</option>
+                                </optgroup>
+                                <optgroup label="Frutas">
+                                    <option value="platano">Plátano</option>
+                                    <option value="aguacate">Aguacate</option>
+                                    <option value="mango">Mango</option>
+                                    <option value="naranja">Naranja</option>
+                                    <option value="limon">Limón</option>
+                                    <option value="mandarina">Mandarina</option>
+                                    <option value="maracuya">Maracuyá</option>
+                                    <option value="granadilla">Granadilla</option>
+                                    <option value="guayaba">Guayaba</option>
+                                    <option value="lulo">Lulo</option>
+                                    <option value="mora">Mora</option>
+                                    <option value="papaya">Papaya</option>
+                                </optgroup>
+                                <optgroup label="Otros">
+                                    <option value="cafe">Café</option>
+                                    <option value="cacao">Cacao</option>
+                                    <option value="cana">Caña de Azúcar</option>
+                                    <option value="tabaco">Tabaco</option>
+                                    <option value="algodon">Algodón</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="terreno">Tipo de Terreno:</label>
+                            <select id="terreno" name="terreno" required>
+                                <option value="">Seleccione tipo de terreno</option>
+                                <option value="arcilloso">Arcilloso</option>
+                                <option value="arenoso">Arenoso</option>
+                                <option value="limoso">Limoso</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fechaSiembra">Fecha de Siembra:</label>
+                            <input type="date" id="fechaSiembra" name="fechaSiembra" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="area">Área de Siembra (m²):</label>
+                            <input type="number" id="area" name="area" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="riego">Sistema de Riego:</label>
+                            <select id="riego" name="riego" required>
+                                <option value="">Seleccione sistema de riego</option>
+                                <option value="goteo">Goteo</option>
+                                <option value="aspersion">Aspersión</option>
+                                <option value="manual">Manual</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="notas">Notas Adicionales:</label>
+                            <textarea id="notas" name="notas" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="diasCosecha">Días hasta la cosecha:</label>
+                            <input type="number" id="diasCosecha" name="diasCosecha" min="1" required>
+                        </div>
+                        <div id="consejoSiembra" class="consejo-box hidden">
+                            <!-- Aquí se mostrará el consejo -->
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="save-btn">Planificar Siembra</button>
+                        </div>
+                    </form>
+
+                    <div class="planifications-history">
+                        <h3>Historial de Planificaciones</h3>
+                        <div class="planifications-grid">
+                            <!-- Las planificaciones se cargarán dinámicamente aquí -->
+                        </div>
+                    </div>
+                </section>
+                <section id="cropsContent" class="hidden">
+                    <h2>Gestión de Cultivos</h2>
+                    <div class="crops-container">
+                        <div class="crops-actions">
+                            <button id="addCropBtn" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Nuevo Cultivo
+                            </button>
+                        </div>
+
+                        <div class="crops-grid">
+                            <!-- Los cultivos se cargarán dinámicamente aquí -->
+                        </div>
+
+                        <!-- Modal para agregar/editar cultivo -->
+                        <div id="cropModal" class="modal hidden">
+                            <div class="modal-content">
+                                <h3>Agregar Nuevo Cultivo</h3>
+                                <form id="cropForm">
+                                    <div class="form-group">
+                                        <label for="cropName">Nombre del Cultivo:</label>
+                                        <input type="text" id="cropName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cropType">Tipo:</label>
+                                        <select id="cropType" required>
+                                            <option value="hortaliza">Hortaliza</option>
+                                            <option value="cereal">Cereal</option>
+                                            <option value="fruta">Fruta</option>
+                                            <option value="legumbre">Legumbre</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="growthCycle">Ciclo de Crecimiento (días):</label>
+                                        <input type="number" id="growthCycle" min="1" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="waterNeeds">Necesidades de Agua:</label>
+                                        <select id="waterNeeds" required>
+                                            <option value="bajo">Bajo</option>
+                                            <option value="medio">Medio</option>
+                                            <option value="alto">Alto</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" id="cancelCropBtn" class="btn btn-secondary">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Modal para agregar eventos a cultivos -->
+                        <div id="eventModal" class="modal hidden">
+                            <div class="modal-content">
+                                <h3>Agregar Evento al Cultivo</h3>
+                                <form id="eventForm">
+                                    <input type="hidden" id="eventCropId">
+                                    <div class="form-group">
+                                        <label for="eventDate">Fecha del Evento:</label>
+                                        <input type="date" id="eventDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="eventType">Tipo de Evento:</label>
+                                        <select id="eventType" required>
+                                            <option value="fertilizacion">Fertilización</option>
+                                            <option value="riego">Riego</option>
+                                            <option value="fumigacion">Fumigación</option>
+                                            <option value="poda">Poda</option>
+                                            <option value="control_plagas">Control de Plagas</option>
+                                            <option value="otro">Otro</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="eventNotes">Notas:</label>
+                                        <textarea id="eventNotes" rows="3" required></textarea>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" id="cancelEventBtn" class="btn btn-secondary">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="storeContent" class="hidden">
+                    <h2>Tienda de Productos Agrícolas</h2>
+                    <div class="store-container">
+                        <!-- Los productos se cargarán dinámicamente aquí -->
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div class="cart-backdrop"></div>
+    <div class="cart-modal">
+        <div class="cart-header">
+            <h3>Carrito de Compras</h3>
+            <i class="fas fa-times close-cart"></i>
+        </div>
+        <div class="cart-items">
+            <!-- Items del carrito se agregarán dinámicamente -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span>$0.00</span>
+            </div>
+            <button class="checkout-btn">Proceder al Pago</button>
+        </div>
+    </div>
+
+    <div class="payment-modal hidden">
+        <div class="payment-content">
+            <div class="payment-header">
+                <h2>Pasarela de Pago</h2>
+                <button class="close-payment">&times;</button>
+            </div>
+            <div class="payment-body">
+                <form id="paymentForm">
+                    <div class="form-group">
+                        <label for="cardNumber">Número de Tarjeta</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                    </div>
+                    <div class="payment-row">
+                        <div class="form-group">
+                            <label for="expiryDate">Fecha de Expiración</label>
+                            <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cvv">CVV</label>
+                            <input type="text" id="cvv" placeholder="123" maxlength="3" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardName">Nombre en la Tarjeta</label>
+                        <input type="text" id="cardName" placeholder="NOMBRE APELLIDO" required>
+                    </div>
+                    <div class="payment-total">
+                        <span>Total a Pagar:</span>
+                        <span class="total-amount">$0.00</span>
+                    </div>
+                    <button type="submit" class="payment-submit-btn">Confirmar Pago</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+</html>
