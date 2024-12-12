@@ -133,3 +133,11 @@
 .cta-button:hover {
     background-color: #c0392b;
 }
+
+.logout-btn:hover {
+    background-color: #c0392b;
+}
+
+.logout-btn {
+    cursor: pointer;
+}
