@@ -520,15 +520,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (crop) {
                 if (!crop.events) crop.events = [];
                 
-                // Crear fecha del evento y normalizarla
-                const eventDate = new Date(eventData.date);
-                eventDate.setHours(0, 0, 0, 0);
+                // Crear objeto de fecha a partir de la fecha seleccionada
+                const selectedDate = new Date(eventData.date + 'T00:00:00');
                 
                 const newEvent = {
                     id: Date.now(),
                     type: eventData.type,
                     notes: eventData.notes,
-                    date: eventDate.toISOString()
+                    date: selectedDate.toISOString()
                 };
 
                 crop.events.push(newEvent);
@@ -540,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.saveCrops();
                 this.renderCrops();
 
-                // Agregar solo el nuevo evento al calendario
+                // Agregar el evento al calendario
                 if (calendarInitialized) {
                     const eventColors = {
                         fertilizacion: '#8bc34a',
@@ -560,11 +559,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         otro: '📝 Otro'
                     };
 
-                    // Asegurarse de que la fecha del evento sea la seleccionada por el usuario
                     const calendarEvent = {
-                        id: `event_${newEvent.id}`, // Identificador único para el evento
+                        id: `event_${newEvent.id}`,
                         title: `${eventTitle[eventData.type]} - ${crop.name}`,
-                        start: eventDate,
+                        start: selectedDate, // Usar directamente la fecha seleccionada
                         allDay: true,
                         color: eventColors[eventData.type],
                         textColor: '#fff',
