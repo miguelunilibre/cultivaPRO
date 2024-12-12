@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showSection(pageId + 'Content');
             event.currentTarget.classList.add('active');
 
+            // Modificar la configuración inicial del calendario para incluir los eventos de los cultivos
             if (pageId === 'calendar' && !calendarInitialized) {
                 $('#calendar').fullCalendar({
                     header: {
@@ -39,21 +40,57 @@ document.addEventListener('DOMContentLoaded', () => {
                         const events = [];
                         
                         crops.forEach(crop => {
-                            // Evento de inicio
+                            // Eventos de inicio y cosecha del cultivo
                             events.push({
+                                id: `start_${crop.id}`,
                                 title: `Inicio: ${crop.name}`,
-                                start: crop.createdAt,
+                                start: new Date(crop.createdAt),
+                                allDay: true,
                                 color: '#4CAF50',
                                 textColor: '#fff'
                             });
                             
-                            // Evento de cosecha
                             events.push({
+                                id: `harvest_${crop.id}`,
                                 title: `Cosecha: ${crop.name}`,
-                                start: crop.harvestDate,
+                                start: new Date(crop.harvestDate),
+                                allDay: true,
                                 color: '#FFA500',
                                 textColor: '#fff'
                             });
+
+                            // Eventos adicionales del cultivo
+                            if (crop.events) {
+                                crop.events.forEach(event => {
+                                    const eventColors = {
+                                        fertilizacion: '#8bc34a',
+                                        riego: '#03a9f4',
+                                        fumigacion: '#ff9800',
+                                        poda: '#9c27b0',
+                                        control_plagas: '#f44336',
+                                        otro: '#795548'
+                                    };
+
+                                    const eventTitle = {
+                                        fertilizacion: '🌱 Fertilización',
+                                        riego: '💧 Riego',
+                                        fumigacion: '🌫️ Fumigación',
+                                        poda: '✂️ Poda',
+                                        control_plagas: '🐛 Control de Plagas',
+                                        otro: '📝 Otro'
+                                    };
+
+                                    events.push({
+                                        id: `event_${event.id}`,
+                                        title: `${eventTitle[event.type]} - ${crop.name}`,
+                                        start: new Date(event.date),
+                                        allDay: true,
+                                        color: eventColors[event.type],
+                                        textColor: '#fff',
+                                        description: event.notes
+                                    });
+                                });
+                            }
                         });
                         
                         callback(events);
@@ -207,9 +244,13 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         startCrop(planification) {
+            // Ajustar la fecha de siembra al inicio del día
             const fechaSiembra = new Date(planification.fechaSiembra);
+            fechaSiembra.setHours(0, 0, 0, 0);
+            
             const fechaCosecha = new Date(fechaSiembra);
             fechaCosecha.setDate(fechaSiembra.getDate() + parseInt(planification.diasCosecha));
+            fechaCosecha.setHours(0, 0, 0, 0);
 
             // Crear nuevo cultivo
             const newCrop = {
@@ -217,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 type: planification.terreno,
                 growthCycle: parseInt(planification.diasCosecha),
                 waterNeeds: planification.riego,
-                createdAt: planification.fechaSiembra,
+                createdAt: fechaSiembra.toISOString(),
                 harvestDate: fechaCosecha.toISOString(),
                 area: planification.area
             };
@@ -332,13 +373,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         addCrop(crop) {
             crop.id = Date.now();
-            crop.createdAt = new Date().toISOString();
+            
+            // Ajustar la fecha de inicio para que sea al inicio del día actual
+            const now = new Date();
+            now.setHours(0, 0, 0, 0); // Establecer a las 00:00:00
+            crop.createdAt = now.toISOString();
             crop.progress = 0;
             
-            // Calcular fecha de finalización
-            const fechaInicio = new Date(crop.createdAt);
-            const fechaFin = new Date(fechaInicio);
+            // Calcular fecha de finalización (también al inicio del día)
+            const fechaFin = new Date(now);
             fechaFin.setDate(fechaFin.getDate() + parseInt(crop.growthCycle));
+            fechaFin.setHours(0, 0, 0, 0);
             crop.harvestDate = fechaFin.toISOString();
 
             this.crops.push(crop);
@@ -347,18 +392,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Agregar eventos al calendario
             if (calendarInitialized) {
-                // Evento de inicio del cultivo
                 $('#calendar').fullCalendar('renderEvent', {
                     title: `Inicio: ${crop.name}`,
-                    start: crop.createdAt,
+                    start: now,
+                    allDay: true,
                     color: '#4CAF50',
                     textColor: '#fff'
                 }, true);
 
-                // Evento de cosecha
                 $('#calendar').fullCalendar('renderEvent', {
                     title: `Cosecha: ${crop.name}`,
-                    start: crop.harvestDate,
+                    start: fechaFin,
+                    allDay: true,
                     color: '#FFA500',
                     textColor: '#fff'
                 }, true);
@@ -376,8 +421,86 @@ document.addEventListener('DOMContentLoaded', () => {
             return Math.min(100, Math.round((daysPassed / crop.growthCycle) * 100));
         },
 
+        calculateCropStats(crop) {
+            const now = new Date();
+            const stats = {
+                health: 100,
+                hydration: 100,
+                nutrition: 100,
+                lastWatering: null,
+                lastFertilization: null,
+                overWatering: false,
+                wateringCount: 0
+            };
+
+            // Obtener eventos de riego y fertilización
+            if (crop.events) {
+                const wateringEvents = crop.events.filter(e => e.type === 'riego');
+                const fertilizationEvents = crop.events.filter(e => e.type === 'fertilizacion');
+
+                // Contar riegos en los últimos 7 días
+                const recentWateringEvents = wateringEvents.filter(event => {
+                    const eventDate = new Date(event.date);
+                    const daysDiff = Math.floor((now - eventDate) / (1000 * 60 * 60 * 24));
+                    return daysDiff <= 7;
+                });
+                stats.wateringCount = recentWateringEvents.length;
+                stats.overWatering = stats.wateringCount > 3; // Más de 3 riegos en 7 días se considera excesivo
+
+                if (wateringEvents.length > 0) {
+                    stats.lastWatering = new Date(Math.max(...wateringEvents.map(e => new Date(e.date))));
+                }
+                if (fertilizationEvents.length > 0) {
+                    stats.lastFertilization = new Date(Math.max(...fertilizationEvents.map(e => new Date(e.date))));
+                }
+            }
+
+            // Calcular hidratación
+            if (stats.lastWatering) {
+                const daysSinceWatering = Math.floor((now - stats.lastWatering) / (1000 * 60 * 60 * 24));
+                stats.hydration = Math.max(0, Math.min(100, 100 - (daysSinceWatering * 15))); // Reduce 15% por día
+                
+                // Penalizar la hidratación si hay exceso de riego
+                if (stats.overWatering) {
+                    stats.hydration = Math.max(0, stats.hydration - 20); // Penalización del 20%
+                }
+            } else {
+                stats.hydration = 50; // Valor inicial si nunca se ha regado
+            }
+
+            // Calcular nutrición
+            if (stats.lastFertilization) {
+                const daysSinceFertilization = Math.floor((now - stats.lastFertilization) / (1000 * 60 * 60 * 24));
+                stats.nutrition = Math.max(0, Math.min(100, 100 - (daysSinceFertilization * 10))); // Reduce 10% por día
+            } else {
+                stats.nutrition = 50; // Valor inicial si nunca se ha fertilizado
+            }
+
+            // Calcular salud general
+            let healthBase = (stats.hydration + stats.nutrition) / 2;
+            
+            // Aplicar penalizaciones
+            if (stats.overWatering) {
+                healthBase -= 15; // Penalización por exceso de riego
+            }
+            if (stats.hydration < 30) {
+                healthBase -= 10; // Penalización por deshidratación severa
+            }
+            if (stats.nutrition < 30) {
+                healthBase -= 10; // Penalización por desnutrición severa
+            }
+
+            // Asegurar que la salud esté entre 0 y 100
+            stats.health = Math.max(0, Math.min(100, Math.round(healthBase)));
+
+            // Asegurar que todos los valores estén entre 0 y 100
+            stats.hydration = Math.round(stats.hydration);
+            stats.nutrition = Math.round(stats.nutrition);
+
+            return stats;
+        },
+
         deleteCrop(cropId) {
-            // Obtener el cultivo antes de eliminarlo
             const cropToDelete = this.crops.find(crop => crop.id === cropId);
             
             this.crops = this.crops.filter(crop => crop.id !== cropId);
@@ -396,20 +519,36 @@ document.addEventListener('DOMContentLoaded', () => {
             const crop = this.crops.find(c => c.id === cropId);
             if (crop) {
                 if (!crop.events) crop.events = [];
-                eventData.id = Date.now();
-                crop.events.push(eventData);
+                
+                // Crear fecha del evento y normalizarla
+                const eventDate = new Date(eventData.date);
+                eventDate.setHours(0, 0, 0, 0);
+                
+                const newEvent = {
+                    id: Date.now(),
+                    type: eventData.type,
+                    notes: eventData.notes,
+                    date: eventDate.toISOString()
+                };
+
+                crop.events.push(newEvent);
+                
+                // Actualizar estadísticas y guardar
+                const stats = this.calculateCropStats(crop);
+                crop.stats = stats;
+                
                 this.saveCrops();
                 this.renderCrops();
 
-                // Mejorar la visualización del evento en el calendario
+                // Agregar solo el nuevo evento al calendario
                 if (calendarInitialized) {
                     const eventColors = {
-                        fertilizacion: '#8bc34a', // Verde claro
-                        riego: '#03a9f4',         // Azul
-                        fumigacion: '#ff9800',    // Naranja
-                        poda: '#9c27b0',          // Morado
-                        control_plagas: '#f44336', // Rojo
-                        otro: '#795548'           // Marrón
+                        fertilizacion: '#8bc34a',
+                        riego: '#03a9f4',
+                        fumigacion: '#ff9800',
+                        poda: '#9c27b0',
+                        control_plagas: '#f44336',
+                        otro: '#795548'
                     };
 
                     const eventTitle = {
@@ -421,14 +560,259 @@ document.addEventListener('DOMContentLoaded', () => {
                         otro: '📝 Otro'
                     };
 
-                    $('#calendar').fullCalendar('renderEvent', {
+                    // Asegurarse de que la fecha del evento sea la seleccionada por el usuario
+                    const calendarEvent = {
+                        id: `event_${newEvent.id}`, // Identificador único para el evento
                         title: `${eventTitle[eventData.type]} - ${crop.name}`,
-                        start: eventData.date,
+                        start: eventDate,
+                        allDay: true,
                         color: eventColors[eventData.type],
                         textColor: '#fff',
-                        description: eventData.notes,
-                    }, true);
+                        description: eventData.notes
+                    };
+
+                    $('#calendar').fullCalendar('renderEvent', calendarEvent, true);
                 }
+            }
+        },
+
+        completeEvent(cropId, eventId) {
+            const crop = this.crops.find(c => c.id === cropId);
+            if (crop && crop.events) {
+                const eventIndex = crop.events.findIndex(e => e.id === eventId);
+                if (eventIndex !== -1) {
+                    const event = crop.events[eventIndex];
+                    
+                    // Mantener las estadísticas actuales como base
+                    const currentStats = { ...crop.stats };
+                    
+                    // Aplicar los efectos permanentes del evento
+                    switch(event.type) {
+                        case 'riego':
+                            currentStats.hydration = Math.min(100, (currentStats.hydration || 0) + 40);
+                            currentStats.lastWatering = new Date().toISOString();
+                            break;
+                        
+                        case 'fertilizacion':
+                            currentStats.nutrition = Math.min(100, (currentStats.nutrition || 0) + 50);
+                            currentStats.lastFertilization = new Date().toISOString();
+                            break;
+                        
+                        case 'fumigacion':
+                            currentStats.pest = Math.max(0, (currentStats.pest || 100) - 70);
+                            currentStats.lastFumigation = new Date().toISOString();
+                            break;
+                        
+                        case 'control_plagas':
+                            currentStats.pest = Math.max(0, (currentStats.pest || 100) - 60);
+                            currentStats.disease = Math.max(0, (currentStats.disease || 100) - 40);
+                            break;
+                        
+                        case 'poda':
+                            currentStats.health = Math.min(100, (currentStats.health || 0) + 20);
+                            break;
+                    }
+
+                    // Actualizar estadísticas del cultivo
+                    crop.stats = currentStats;
+
+                    // Marcar el evento como completado y moverlo al historial
+                    const completedEvent = {
+                        ...event,
+                        completed: true,
+                        completedAt: new Date().toISOString(),
+                        effectsApplied: true // Marcamos que los efectos ya fueron aplicados
+                    };
+
+                    // Eliminar el evento de la lista activa y moverlo al historial
+                    crop.events.splice(eventIndex, 1);
+                    if (!crop.completedEvents) crop.completedEvents = [];
+                    crop.completedEvents.push(completedEvent);
+
+                    // Eliminar el evento del calendario
+                    if (calendarInitialized) {
+                        $('#calendar').fullCalendar('removeEvents', `event_${eventId}`);
+                    }
+
+                    // Recalcular la salud general
+                    this.updateCropHealth(crop);
+                    
+                    this.saveCrops();
+                    this.renderCrops();
+                }
+            }
+        },
+
+        deleteEvent(cropId, eventId) {
+            const crop = this.crops.find(c => c.id === cropId);
+            if (crop && crop.events) {
+                const event = crop.events.find(e => e.id === eventId);
+                if (event) {
+                    // Solo revertir los efectos si el evento no estaba completado
+                    if (!event.completed) {
+                        // Revertir los efectos temporales
+                        switch(event.type) {
+                            case 'riego':
+                                crop.stats.hydration = Math.max(0, (crop.stats.hydration || 100) - 40);
+                                this.updateLastEventDate(crop, 'riego', 'lastWatering');
+                                break;
+                            
+                            case 'fertilizacion':
+                                crop.stats.nutrition = Math.max(0, (crop.stats.nutrition || 100) - 50);
+                                this.updateLastEventDate(crop, 'fertilizacion', 'lastFertilization');
+                                break;
+                            
+                            case 'fumigacion':
+                                crop.stats.pest = Math.min(100, (crop.stats.pest || 0) + 70);
+                                this.updateLastEventDate(crop, 'fumigacion', 'lastFumigation');
+                                break;
+                            
+                            case 'control_plagas':
+                                crop.stats.pest = Math.min(100, (crop.stats.pest || 0) + 60);
+                                crop.stats.disease = Math.min(100, (crop.stats.disease || 0) + 40);
+                                break;
+                            
+                            case 'poda':
+                                crop.stats.health = Math.max(0, (crop.stats.health || 100) - 20);
+                                break;
+                        }
+                    }
+
+                    // Eliminar el evento
+                    crop.events = crop.events.filter(e => e.id !== eventId);
+                    
+                    // Eliminar el evento del calendario
+                    if (calendarInitialized) {
+                        $('#calendar').fullCalendar('removeEvents', `event_${eventId}`);
+                    }
+
+                    // Recalcular la salud general
+                    this.updateCropHealth(crop);
+
+                    this.saveCrops();
+                    this.renderCrops();
+                }
+            }
+        },
+
+        applyEventEffects(crop, event) {
+            // Si no existe stats, inicializarlo
+            if (!crop.stats) crop.stats = {};
+            
+            switch(event.type) {
+                case 'riego':
+                    crop.stats.hydration = Math.min(100, (crop.stats.hydration || 0) + 40);
+                    crop.stats.lastWatering = new Date().toISOString();
+                    break;
+                
+                case 'fertilizacion':
+                    crop.stats.nutrition = Math.min(100, (crop.stats.nutrition || 0) + 50);
+                    crop.stats.lastFertilization = new Date().toISOString();
+                    break;
+                
+                case 'fumigacion':
+                    crop.stats.pest = Math.max(0, (crop.stats.pest || 100) - 70);
+                    crop.stats.lastFumigation = new Date().toISOString();
+                    break;
+                
+                case 'control_plagas':
+                    crop.stats.pest = Math.max(0, (crop.stats.pest || 100) - 60);
+                    crop.stats.disease = Math.max(0, (crop.stats.disease || 100) - 40);
+                    break;
+                
+                case 'poda':
+                    crop.stats.health = Math.min(100, (crop.stats.health || 0) + 20);
+                    break;
+            }
+
+            // Recalcular salud general después de aplicar los efectos
+            this.updateCropHealth(crop);
+        },
+
+        updateCropHealth(crop) {
+            const stats = crop.stats;
+            let healthBase = ((stats.hydration || 0) + (stats.nutrition || 0)) / 2;
+            
+            // Reducir salud basado en plagas y enfermedades
+            if (stats.pest) {
+                healthBase -= stats.pest * 0.3;
+            }
+            if (stats.disease) {
+                healthBase -= stats.disease * 0.3;
+            }
+
+            // Asegurar que la salud esté entre 0 y 100
+            crop.stats.health = Math.max(0, Math.min(100, Math.round(healthBase)));
+        },
+
+        deleteEvent(cropId, eventId) {
+            const crop = this.crops.find(c => c.id === cropId);
+            if (crop && crop.events) {
+                const event = crop.events.find(e => e.id === eventId);
+                if (event) {
+                    // Revertir los efectos del evento si no estaba completado
+                    if (!event.completed) {
+                        this.revertEventEffects(crop, event);
+                    }
+
+                    // Eliminar el evento
+                    crop.events = crop.events.filter(e => e.id !== eventId);
+                    
+                    // Eliminar el evento del calendario
+                    if (calendarInitialized) {
+                        $('#calendar').fullCalendar('removeEvents', `event_${eventId}`);
+                    }
+
+                    this.saveCrops();
+                    this.renderCrops();
+                }
+            }
+        },
+
+        revertEventEffects(crop, event) {
+            // Solo revertir si el evento no estaba completado
+            if (!event.completed) {
+                switch(event.type) {
+                    case 'riego':
+                        crop.stats.hydration = Math.max(0, (crop.stats.hydration || 100) - 40);
+                        // Actualizar última fecha de riego al evento anterior más reciente
+                        this.updateLastEventDate(crop, 'riego', 'lastWatering');
+                        break;
+                    
+                    case 'fertilizacion':
+                        crop.stats.nutrition = Math.max(0, (crop.stats.nutrition || 100) - 50);
+                        this.updateLastEventDate(crop, 'fertilizacion', 'lastFertilization');
+                        break;
+                    
+                    case 'fumigacion':
+                        crop.stats.pest = Math.min(100, (crop.stats.pest || 0) + 70);
+                        this.updateLastEventDate(crop, 'fumigacion', 'lastFumigation');
+                        break;
+                    
+                    case 'control_plagas':
+                        crop.stats.pest = Math.min(100, (crop.stats.pest || 0) + 60);
+                        crop.stats.disease = Math.min(100, (crop.stats.disease || 0) + 40);
+                        break;
+                    
+                    case 'poda':
+                        crop.stats.health = Math.max(0, (crop.stats.health || 100) - 20);
+                        break;
+                }
+
+                // Recalcular salud general después de revertir los efectos
+                this.updateCropHealth(crop);
+            }
+        },
+
+        updateLastEventDate(crop, eventType, statKey) {
+            // Buscar el último evento completado del mismo tipo
+            const lastEvent = crop.completedEvents?.filter(e => e.type === eventType)
+                .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))[0];
+            
+            if (lastEvent) {
+                crop.stats[statKey] = lastEvent.completedAt;
+            } else {
+                delete crop.stats[statKey]; // Si no hay eventos anteriores, eliminar la fecha
             }
         },
 
@@ -437,22 +821,64 @@ document.addEventListener('DOMContentLoaded', () => {
             cropsGrid.innerHTML = '';
 
             this.crops.forEach(crop => {
+                const stats = this.calculateCropStats(crop);
                 const progress = this.calculateProgress(crop);
                 const card = document.createElement('div');
                 card.className = 'crop-card';
+
+                // Determinar el estado general del cultivo
+                const healthStatus = stats.health >= 80 ? 'Excelente' :
+                                   stats.health >= 60 ? 'Bueno' :
+                                   stats.health >= 40 ? 'Regular' :
+                                   'Crítico';
                 
-                // Crear lista de eventos del cultivo
+                // Determinar íconos y colores según el estado
+                const getStatusIcon = (value) => {
+                    if (value >= 80) return '🟢';
+                    if (value >= 60) return '🟡';
+                    if (value >= 40) return '🟠';
+                    return '🔴';
+                };
+
+                // Generar recomendaciones basadas en las estadísticas
+                const recommendations = [];
+                if (stats.hydration < 50) recommendations.push('💧 Se recomienda regar el cultivo');
+                if (stats.nutrition < 50) recommendations.push('🌱 Necesita fertilización');
+                if (stats.pest > 50) recommendations.push('🐛 Control de plagas necesario');
+                if (stats.disease > 50) recommendations.push('🏥 Atención sanitaria requerida');
+                if (stats.overWatering) recommendations.push('⚠️ Exceso de riego detectado');
+
                 const eventsHtml = (crop.events || []).map(event => `
-                    <li class="crop-event">
-                        <span class="event-type">${event.type}</span>
-                        <span class="event-date">${new Date(event.date).toLocaleDateString()}</span>
+                    <li class="crop-event ${event.type}">
+                        <span class="event-icon">${
+                            event.type === 'riego' ? '💧' :
+                            event.type === 'fertilizacion' ? '🌱' :
+                            event.type === 'fumigacion' ? '🌫️' :
+                            event.type === 'poda' ? '✂️' :
+                            event.type === 'control_plagas' ? '🐛' : '📝'
+                        }</span>
+                        <span class="event-info">
+                            <strong>${event.type.charAt(0).toUpperCase() + event.type.slice(1)}</strong>
+                            <span class="event-date">${new Date(event.date).toLocaleDateString()}</span>
+                        </span>
                         <span class="event-notes">${event.notes}</span>
+                        <div class="event-actions">
+                            <button class="btn-complete-event" data-crop-id="${crop.id}" data-event-id="${event.id}" title="Marcar como realizado">
+                                ✓
+                            </button>
+                            <button class="btn-delete-event" data-crop-id="${crop.id}" data-event-id="${event.id}" title="Eliminar evento">
+                                ×
+                            </button>
+                        </div>
                     </li>
                 `).join('');
 
                 card.innerHTML = `
                     <div class="crop-header">
-                        <h3 class="crop-title">${crop.name}</h3>
+                        <h3 class="crop-title">
+                            ${crop.name}
+                            <span class="crop-status ${healthStatus.toLowerCase()}">${getStatusIcon(stats.health)}</span>
+                        </h3>
                         <div class="crop-actions">
                             <button class="add-event-btn" data-crop-id="${crop.id}">
                                 <i class="fas fa-plus"></i> Evento
@@ -463,21 +889,83 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     <div class="crop-info">
-                        <p><strong>Tipo:</strong> ${crop.type}</p>
-                        <p><strong>Ciclo:</strong> ${crop.growthCycle} días</p>
-                        <p><strong>Necesidad de agua:</strong> ${crop.waterNeeds}</p>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        <div class="crop-details">
+                            <p><strong>Tipo:</strong> ${crop.type}</p>
+                            <p><strong>Ciclo:</strong> ${crop.growthCycle} días</p>
+                            <p><strong>Necesidad de agua:</strong> ${crop.waterNeeds}</p>
                         </div>
-                        <p class="progress-text">${progress}% completado</p>
-                        ${crop.events && crop.events.length > 0 ? `
-                            <div class="crop-events">
-                                <h4>Eventos del cultivo</h4>
-                                <ul class="events-list">
-                                    ${eventsHtml}
-                                </ul>
+
+                        <div class="stats-container">
+                            <h4>Estado del Cultivo: <span class="${healthStatus.toLowerCase()}">${healthStatus}</span></h4>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">🌿</div>
+                                    <div class="stat-info">
+                                        <span class="stat-label">Salud General</span>
+                                        <div class="stat-bar">
+                                            <div class="stat-fill health" style="width: ${stats.health}%">
+                                                <span class="stat-value">${stats.health}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-icon">💧</div>
+                                    <div class="stat-info">
+                                        <span class="stat-label">Hidratación</span>
+                                        <div class="stat-bar">
+                                            <div class="stat-fill hydration" style="width: ${stats.hydration}%">
+                                                <span class="stat-value">${stats.hydration}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-icon">🌱</div>
+                                    <div class="stat-info">
+                                        <span class="stat-label">Nutrición</span>
+                                        <div class="stat-bar">
+                                            <div class="stat-fill nutrition" style="width: ${stats.nutrition}%">
+                                                <span class="stat-value">${stats.nutrition}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-icon">🌡️</div>
+                                    <div class="stat-info">
+                                        <span class="stat-label">Progreso</span>
+                                        <div class="stat-bar">
+                                            <div class="stat-fill progress" style="width: ${progress}%">
+                                                <span class="stat-value">${progress}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        ` : ''}
+
+                            ${recommendations.length > 0 ? `
+                                <div class="recommendations-panel">
+                                    <h5>Recomendaciones:</h5>
+                                    <ul>
+                                        ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+
+                            <div class="events-timeline">
+                                <h5>Últimas actividades</h5>
+                                <div class="timeline-container">
+                                    <ul class="events-list">
+                                        ${eventsHtml}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
 
@@ -496,6 +984,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (confirm('¿Estás seguro de que deseas eliminar este cultivo?')) {
                         this.deleteCrop(crop.id);
                     }
+                });
+
+                // Agregar event listeners para los nuevos botones
+                card.querySelectorAll('.btn-complete-event').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const cropId = parseInt(e.target.dataset.cropId);
+                        const eventId = parseInt(e.target.dataset.eventId);
+                        if (confirm('¿Marcar este evento como realizado?')) {
+                            this.completeEvent(cropId, eventId);
+                        }
+                    });
+                });
+
+                card.querySelectorAll('.btn-delete-event').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const cropId = parseInt(e.target.dataset.cropId);
+                        const eventId = parseInt(e.target.dataset.eventId);
+                        if (confirm('¿Estás seguro de eliminar este evento?')) {
+                            this.deleteEvent(cropId, eventId);
+                        }
+                    });
                 });
             });
         }
@@ -532,7 +1041,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const eventData = {
             type: document.getElementById('eventType').value,
             notes: document.getElementById('eventNotes').value,
-            date: document.getElementById('eventDate').value // Obtener la fecha seleccionada
+            date: document.getElementById('eventDate').value // La fecha seleccionada por el usuario
         };
 
         cropsManager.addEventToCrop(cropId, eventData);
