@@ -1198,6 +1198,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const paymentForm = document.getElementById('paymentForm');
             const closePaymentBtn = document.querySelector('.close-payment');
             
+            // Función para cerrar el modal de pago
+            const closePaymentModal = () => {
+                paymentModal.classList.add('hidden');
+                paymentForm.reset();
+            };
+            
+            // Limpiar event listeners anteriores para evitar duplicados
+            const newCloseBtn = closePaymentBtn.cloneNode(true);
+            closePaymentBtn.parentNode.replaceChild(newCloseBtn, closePaymentBtn);
+            
+            // Agregar event listener al botón de cerrar
+            newCloseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                closePaymentModal();
+            });
+            
+            // Event listener para el formulario
             const handlePaymentSubmit = (e) => {
                 e.preventDefault();
                 
@@ -1211,41 +1229,50 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.items = [];
                     this.updateCart();
                     this.closeCart();
-                    paymentModal.classList.add('hidden');
+                    closePaymentModal();
                     loadingBtn.textContent = 'Confirmar Pago';
                     loadingBtn.disabled = false;
-                    paymentForm.reset();
                 }, 2000);
             };
             
-            const handleCardNumber = (e) => {
+            // Limpiar event listeners anteriores del formulario
+            const newForm = paymentForm.cloneNode(true);
+            paymentForm.parentNode.replaceChild(newForm, paymentForm);
+            
+            // Agregar nuevos event listeners
+            newForm.addEventListener('submit', handlePaymentSubmit);
+            
+            // Event listeners para el formato de los campos
+            const cardNumber = newForm.querySelector('#cardNumber');
+            const expiryDate = newForm.querySelector('#expiryDate');
+            const cvv = newForm.querySelector('#cvv');
+            
+            cardNumber.addEventListener('input', (e) => {
                 let value = e.target.value.replace(/\D/g, '');
                 value = value.replace(/(\d{4})/g, '$1 ').trim();
                 e.target.value = value;
-            };
+            });
             
-            const handleExpiryDate = (e) => {
+            expiryDate.addEventListener('input', (e) => {
                 let value = e.target.value.replace(/\D/g, '');
                 if (value.length >= 2) {
                     value = value.slice(0, 2) + '/' + value.slice(2);
                 }
                 e.target.value = value;
-            };
-            
-            const handleCVV = (e) => {
-                e.target.value = e.target.value.replace(/\D/g, '');
-            };
-            
-            // Event listeners
-            paymentForm.addEventListener('submit', handlePaymentSubmit);
-            closePaymentBtn.addEventListener('click', () => {
-                paymentModal.classList.add('hidden');
-                paymentForm.reset();
             });
             
-            document.getElementById('cardNumber').addEventListener('input', handleCardNumber);
-            document.getElementById('expiryDate').addEventListener('input', handleExpiryDate);
-            document.getElementById('cvv').addEventListener('input', handleCVV);
+            cvv.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+            
+            // Agregar event listener para cerrar con la tecla ESC
+            const handleEscKey = (e) => {
+                if (e.key === 'Escape') {
+                    closePaymentModal();
+                    document.removeEventListener('keydown', handleEscKey);
+                }
+            };
+            document.addEventListener('keydown', handleEscKey);
         }
     };
 
