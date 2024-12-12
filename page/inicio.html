@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CultivaPro</title> <link rel="icon" type="image/x-icon" href="../img/logo.png">
-   
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/inicio.css">
     <link rel="stylesheet" href="../css/perfil.css">
     <link rel="stylesheet" href="../css/tienda.css">
+    <link rel="stylesheet" href="../css/modal.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../css/planification.css">
@@ -339,6 +339,11 @@
             <h3>Carrito de Compras</h3>
             <i class="fas fa-times close-cart"></i>
         </div>
+        <div class="cart-empty-message" style="display: none;">
+            <i class="fas fa-shopping-basket"></i>
+            <p>Tu carrito está vacío</p>
+            <p class="cart-empty-subtitle">¡Agrega algunos productos!</p>
+        </div>
         <div class="cart-items">
             <!-- Items del carrito se agregarán dinámicamente -->
         </div>
@@ -354,35 +359,144 @@
     <div class="payment-modal hidden">
         <div class="payment-content">
             <div class="payment-header">
-                <h2>Pasarela de Pago</h2>
+                <h2>Finalizar Compra</h2>
                 <button class="close-payment">&times;</button>
             </div>
             <div class="payment-body">
-                <form id="paymentForm">
-                    <div class="form-group">
-                        <label for="cardNumber">Número de Tarjeta</label>
-                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                <!-- Resumen de la compra -->
+                <div class="order-summary">
+                    <h3>Resumen del Pedido</h3>
+                    <div class="order-items">
+                        <!-- Los items se cargarán dinámicamente aquí -->
                     </div>
-                    <div class="payment-row">
-                        <div class="form-group">
-                            <label for="expiryDate">Fecha de Expiración</label>
-                            <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" required>
+                    <div class="order-total">
+                        <div class="items-list">
+                            <!-- Aquí se mostrarán los productos -->
                         </div>
-                        <div class="form-group">
-                            <label for="cvv">CVV</label>
-                            <input type="text" id="cvv" placeholder="123" maxlength="3" required>
+                        <div class="total">
+                            <span>Total a Pagar:</span>
+                            <span class="total-amount">$0.00</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="cardName">Nombre en la Tarjeta</label>
-                        <input type="text" id="cardName" placeholder="NOMBRE APELLIDO" required>
+                </div>
+
+                <!-- Métodos de pago -->
+                <div class="payment-methods">
+                    <h3>Método de Pago</h3>
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="card" checked>
+                            <span class="option-content">
+                                <i class="fas fa-credit-card"></i>
+                                Tarjeta de Crédito/Débito
+                            </span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="pse">
+                            <span class="option-content">
+                                <i class="fas fa-university"></i>
+                                PSE
+                            </span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="nequi">
+                            <span class="option-content">
+                                <i class="fas fa-mobile-alt"></i>
+                                Nequi
+                            </span>
+                        </label>
                     </div>
-                    <div class="payment-total">
-                        <span>Total a Pagar:</span>
-                        <span class="total-amount">$0.00</span>
-                    </div>
-                    <button type="submit" class="payment-submit-btn">Confirmar Pago</button>
-                </form>
+
+                    <!-- Formulario de tarjeta de crédito -->
+                    <form id="paymentForm" class="payment-form">
+                        <!-- Contenedor para Tarjeta de Crédito -->
+                        <div id="cardForm" class="payment-method-form">
+                            <div class="form-group card-number">
+                                <label for="cardNumber">Número de Tarjeta</label>
+                                <div class="card-input-wrapper">
+                                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                                    <div class="card-icons">
+                                        <i class="fab fa-cc-visa"></i>
+                                        <i class="fab fa-cc-mastercard"></i>
+                                        <i class="fab fa-cc-amex"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cardName">Nombre en la Tarjeta</label>
+                                    <input type="text" id="cardName" placeholder="NOMBRE APELLIDO" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiryDate">Fecha de Vencimiento</label>
+                                    <input type="text" id="expiryDate" placeholder="MM/AA" maxlength="5" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV</label>
+                                    <input type="text" id="cvv" placeholder="123" maxlength="4" required>
+                                    <i class="fas fa-question-circle cvv-help" title="El código de seguridad se encuentra en el reverso de tu tarjeta"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contenedor para PSE -->
+                        <div id="pseForm" class="payment-method-form hidden">
+                            <div class="form-group">
+                                <label for="bankSelect">Seleccione su banco</label>
+                                <select id="bankSelect" required>
+                                    <option value="">Seleccione un banco</option>
+                                    <option value="bancolombia">Bancolombia</option>
+                                    <option value="davivienda">Davivienda</option>
+                                    <option value="bbva">BBVA</option>
+                                    <option value="bogota">Banco de Bogotá</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="documentType">Tipo de documento</label>
+                                <select id="documentType" required>
+                                    <option value="">Seleccione tipo de documento</option>
+                                    <option value="cc">Cédula de Ciudadanía</option>
+                                    <option value="ce">Cédula de Extranjería</option>
+                                    <option value="nit">NIT</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="documentNumber">Número de documento</label>
+                                <input type="text" id="documentNumber" required>
+                            </div>
+                        </div>
+
+                        <!-- Contenedor para Nequi -->
+                        <div id="nequiForm" class="payment-method-form hidden">
+                            <div class="form-group">
+                                <label for="phoneNumber">Número de celular Nequi</label>
+                                <input type="tel" id="phoneNumber" placeholder="300 123 4567" required>
+                            </div>
+                        </div>
+
+                        <!-- Dirección de facturación común para todos -->
+                        <div class="billing-address">
+                            <h4>Dirección de Facturación</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="billingAddress">Dirección</label>
+                                    <input type="text" id="billingAddress" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="billingCity">Ciudad</label>
+                                    <input type="text" id="billingCity" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="payment-submit-btn">
+                            <i class="fas fa-lock"></i>
+                            Pagar <span class="total-amount">$0.00</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

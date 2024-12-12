@@ -631,6 +631,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderCartItems() {
             const cartItems = document.querySelector('.cart-items');
+            const emptyMessage = document.querySelector('.cart-empty-message');
+            const cartFooter = document.querySelector('.cart-footer');
+            
+            if (this.items.length === 0) {
+                cartItems.innerHTML = '';
+                emptyMessage.style.display = 'block';
+                cartFooter.style.display = 'none';
+                return;
+            }
+        
+            emptyMessage.style.display = 'none';
+            cartFooter.style.display = 'block';
+            
             cartItems.innerHTML = this.items.map(item => `
                 <div class="cart-item">
                     <img src="${item.image}" alt="${item.name}">
@@ -681,64 +694,94 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Mostrar el modal de pago
             const paymentModal = document.querySelector('.payment-modal');
+            const itemsList = paymentModal.querySelector('.items-list');
             const totalAmount = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            document.querySelector('.total-amount').textContent = `$${totalAmount.toFixed(2)}`;
+            
+            // Mostrar productos en el resumen
+            itemsList.innerHTML = this.items.map(item => `
+                <div class="order-item">
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="order-item-details">
+                        <div class="order-item-name">${item.name}</div>
+                        <div class="order-item-price">$${item.price}</div>
+                        <div class="order-item-quantity">Cantidad: ${item.quantity}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Actualizar total
+            document.querySelectorAll('.total-amount').forEach(el => {
+                el.textContent = `$${totalAmount.toFixed(2)}`;
+            });
+            
             paymentModal.classList.remove('hidden');
             
-            // Configurar el formulario de pago
+            // Manejar el envío del formulario de pago
             const paymentForm = document.getElementById('paymentForm');
-            const closePaymentBtn = document.querySelector('.close-payment');
             
-            const handlePaymentSubmit = (e) => {
+            const handlePaymentSubmit = async (e) => {
                 e.preventDefault();
                 
-                // Simulación de procesamiento de pago
-                const loadingBtn = e.target.querySelector('button');
-                loadingBtn.textContent = 'Procesando...';
-                loadingBtn.disabled = true;
+                // Obtener el método de pago seleccionado
+                const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
                 
-                setTimeout(() => {
-                    alert('¡Pago procesado exitosamente!');
+                // Validar campos según el método de pago
+                const currentForm = document.getElementById(`${selectedMethod}Form`);
+                const requiredInputs = currentForm.querySelectorAll('input[required], select[required]');
+                let isValid = true;
+                
+                requiredInputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('error');
+                    } else {
+                        input.classList.remove('error');
+                    }
+                });
+                
+                if (!isValid) {
+                    alert('Por favor complete todos los campos requeridos');
+                    return;
+                }
+                
+                // Mostrar estado de procesamiento
+                const submitBtn = e.target.querySelector('.payment-submit-btn');
+                const originalBtnText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+                submitBtn.disabled = true;
+                
+                try {
+                    // Simular proceso de pago
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    // Limpiar carrito
                     this.items = [];
                     this.updateCart();
                     this.closeCart();
+                    
+                    // Cerrar modal de pago
                     paymentModal.classList.add('hidden');
-                    loadingBtn.textContent = 'Confirmar Pago';
-                    loadingBtn.disabled = false;
+                    
+                    // Mostrar mensaje de éxito
+                    alert('¡Pago procesado exitosamente! Gracias por tu compra.');
+                    
+                    // Resetear formulario
                     paymentForm.reset();
-                }, 2000);
-            };
-            
-            const handleCardNumber = (e) => {
-                let value = e.target.value.replace(/\D/g, '');
-                value = value.replace(/(\d{4})/g, '$1 ').trim();
-                e.target.value = value;
-            };
-            
-            const handleExpiryDate = (e) => {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length >= 2) {
-                    value = value.slice(0, 2) + '/' + value.slice(2);
+                    
+                } catch (error) {
+                    alert('Error al procesar el pago. Por favor intente nuevamente.');
+                } finally {
+                    // Restaurar botón
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
                 }
-                e.target.value = value;
             };
             
-            const handleCVV = (e) => {
-                e.target.value = e.target.value.replace(/\D/g, '');
-            };
-            
-            // Event listeners
+            // Remover evento anterior si existe
+            paymentForm.removeEventListener('submit', handlePaymentSubmit);
+            // Agregar nuevo evento
             paymentForm.addEventListener('submit', handlePaymentSubmit);
-            closePaymentBtn.addEventListener('click', () => {
-                paymentModal.classList.add('hidden');
-                paymentForm.reset();
-            });
-            
-            document.getElementById('cardNumber').addEventListener('input', handleCardNumber);
-            document.getElementById('expiryDate').addEventListener('input', handleExpiryDate);
-            document.getElementById('cvv').addEventListener('input', handleCVV);
         }
     };
 
@@ -776,5 +819,31 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('logoutBtn').addEventListener('click', () => {
         window.location.href = '../index.html';
     });
-}); // Final del DOMContentLoaded
 
+    // Manejo de cambio de método de pago
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            // Ocultar todos los formularios
+            document.querySelectorAll('.payment-method-form').forEach(form => {
+                form.classList.add('hidden');
+            });
+            
+            // Mostrar el formulario correspondiente
+            const selectedMethod = e.target.value;
+            document.getElementById(`${selectedMethod}Form`).classList.remove('hidden');
+            
+            // Actualizar los campos requeridos
+            const currentForm = document.getElementById(`${selectedMethod}Form`);
+            currentForm.querySelectorAll('input, select').forEach(input => {
+                input.required = true;
+            });
+            
+            // Remover required de los otros formularios
+            document.querySelectorAll('.payment-method-form:not(#${selectedMethod}Form)').forEach(form => {
+                form.querySelectorAll('input, select').forEach(input => {
+                    input.required = false;
+                });
+            });
+        });
+    });
+}); // Final del DOMContentLoaded
