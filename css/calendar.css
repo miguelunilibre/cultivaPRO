@@ -1,48 +1,63 @@
 /* Estilos generales del calendario */
 :root {
-    --primary-color: #4caf50;
-    --primary-dark: #2e7d32;
-    --secondary-color: #ff9800;
-    --secondary-dark: #f57c00;
-    --accent-blue: #2196f3;
-    --accent-blue-dark: #1976d2;
+    /* Enhanced color palette with better contrast and harmony */
+    --primary-color: #2ecc71;
+    --primary-dark: #27ae60;
+    --secondary-color: #f39c12;
+    --secondary-dark: #d35400;
+    --accent-blue: #3498db;
+    --accent-blue-dark: #2980b9;
     --text-color: #2c3e50;
-    --background-light: #f1f8e9;
-    --background-white: #fff;
-    --shadow-light: rgba(0, 0, 0, 0.1);
-    --shadow-medium: rgba(0, 0, 0, 0.2);
+    --background-light: #ecf0f1;
+    --background-white: #ffffff;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+    
+    /* Added soft text colors for better readability */
+    --text-soft: #34495e;
+    --text-muted: #7f8c8d;
 }
 
 #calendar {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
+    max-width: 1000px; /* Slightly wider for better readability */
+    margin: 30px auto;
+    padding: 25px;
     background: var(--background-white);
-    border-radius: 12px;
-    box-shadow: 0 5px 15px var(--shadow-light);
-    border: 1px solid #e8e8e8;
-    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-radius: 16px; /* More pronounced rounded corners */
+    box-shadow: 
+        0 10px 30px var(--shadow-light), 
+        0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e9ecef;
+    font-family: 'Inter', 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+#calendar:hover {
+    box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.08), 
+        0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* Encabezado del calendario */
 .fc-header-toolbar {
-    padding: 15px !important;
-    margin-bottom: 20px !important;
-    background: linear-gradient(135deg, #e8f5e9, var(--background-light));
-    border-radius: 8px;
+    padding: 20px !important;
+    margin-bottom: 25px !important;
+    background: linear-gradient(135deg, #f6f9fc, var(--background-light));
+    border-radius: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
+    transition: background 0.3s ease;
 }
 
 .fc-toolbar h2 {
-    font-size: 1.8em !important;
-    color: var(--text-color) !important;
-    font-weight: 600 !important;
+    font-size: 2em !important;
+    color: var(--text-soft) !important;
+    font-weight: 700 !important;
     margin: 0;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
 }
 
 /* Botones del calendario */
@@ -50,88 +65,116 @@
     background: var(--primary-color) !important;
     border: none !important;
     color: white !important;
-    padding: 10px 18px !important;
-    border-radius: 8px !important;
-    text-transform: capitalize !important;
-    font-size: 0.9em !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 3px 6px var(--shadow-light);
+    padding: 12px 22px !important;
+    border-radius: 10px !important;
+    text-transform: uppercase !important;
+    font-size: 0.85em !important;
+    font-weight: 600 !important;
+    transition: 
+        all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    box-shadow: 
+        0 4px 6px var(--shadow-light), 
+        0 1px 3px rgba(0,0,0,0.08) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     outline: none !important;
+    letter-spacing: 0.5px;
 }
 
 .fc-button:focus,
 .fc-button:active {
     outline: none !important;
-    box-shadow: 0 3px 6px var(--shadow-medium) !important;
+    transform: translateY(1px);
+    box-shadow: 
+        0 2px 4px var(--shadow-medium) !important;
 }
 
 .fc-button:hover {
     background: var(--primary-dark) !important;
-    box-shadow: 0 4px 8px var(--shadow-medium) !important;
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 12px var(--shadow-medium), 
+        0 2px 4px rgba(0,0,0,0.1) !important;
 }
 
 .fc-button.fc-state-active {
     background: var(--primary-dark) !important;
-    box-shadow: 0 3px 6px var(--shadow-light) !important;
+    transform: translateY(1px);
 }
 
 /* Días de la semana */
 .fc-day-header {
-    padding: 12px 0 !important;
-    background: #f9fbe7 !important;
-    color: #33691e !important;
-    font-weight: bold !important;
+    padding: 15px 0 !important;
+    background: #f0f4f8 !important;
+    color: var(--text-soft) !important;
+    font-weight: 700 !important;
     text-transform: uppercase !important;
-    font-size: 0.85em !important;
+    font-size: 0.8em !important;
+    letter-spacing: 1px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* Celdas de días */
 .fc-day {
-    transition: all 0.3s ease !important;
+    transition: 
+        background 0.3s ease, 
+        transform 0.2s ease !important;
     cursor: pointer;
 }
 
 .fc-day:hover {
-    background: var(--background-light) !important;
-    border-radius: 4px;
+    background: rgba(46, 204, 113, 0.1) !important;
+    transform: scale(1.01);
+    border-radius: 8px;
 }
 
 /* Números de los días */
 .fc-day-number {
-    padding: 8px !important;
-    font-size: 1.2em !important;
-    color: #555 !important;
-    font-weight: bold;
+    padding: 10px !important;
+    font-size: 1.1em !important;
+    color: var(--text-soft) !important;
+    font-weight: 600;
 }
 
 /* Día actual */
 .fc-today {
-    background-color: #e8f5e9 !important;
+    background-color: #e8f4f2 !important;
     border: 2px solid var(--primary-color) !important;
-    border-radius: 4px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.fc-today::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 2px;
 }
 
 /* Eventos */
 .fc-event {
     border: none !important;
-    padding: 5px 10px !important;
-    border-radius: 6px !important;
-    margin: 2px 0 !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    margin: 4px 0 !important;
     transition: 
-        transform 0.2s ease, 
-        background 0.3s ease, 
-        box-shadow 0.2s ease !important;
-    font-size: 0.8em !important;
-    line-height: 1.4 !important;
+        transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), 
+        box-shadow 0.3s ease !important;
+    font-size: 0.85em !important;
+    line-height: 1.5 !important;
     display: flex !important;
     align-items: center !important;
-    gap: 6px !important;
+    gap: 8px !important;
     position: relative !important;
     overflow: hidden !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .fc-event-title {
@@ -139,151 +182,113 @@
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
-    padding-right: 5px !important;
+    padding-right: 8px !important;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .fc-event:hover {
-    transform: scale(1.02) !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+    transform: scale(1.03) translateY(-3px) !important;
+    box-shadow: 
+        0 8px 15px rgba(0, 0, 0, 0.15), 
+        0 4px 6px rgba(0, 0, 0, 0.1) !important;
     z-index: 10 !important;
 }
 
-/* Mejora para múltiples eventos en un día */
-.fc-day-grid .fc-event-container {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px !important;
-    max-height: 120px !important;
-    overflow-y: auto !important;
-    scrollbar-width: thin !important;
-    scrollbar-color: rgba(0,0,0,0.2) transparent !important;
+/* Color variations for different event types */
+.fc-event.event-siembra { 
+    background-color: var(--primary-color) !important; 
+    border-left: 6px solid var(--primary-dark) !important; 
 }
 
-.fc-day-grid .fc-event-container::-webkit-scrollbar {
-    width: 6px !important;
+.fc-event.event-cosecha { 
+    background-color: var(--secondary-color) !important; 
+    border-left: 6px solid var(--secondary-dark) !important; 
 }
 
-.fc-day-grid .fc-event-container::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2) !important;
-    border-radius: 3px !important;
+.fc-event.event-riego { 
+    background-color: var(--accent-blue) !important; 
+    border-left: 6px solid var(--accent-blue-dark) !important; 
 }
 
-/* Estilo para eventos compactos */
-.fc-compact-events .fc-event {
-    font-size: 0.7em !important;
-    padding: 3px 6px !important;
-    margin: 1px 0 !important;
-}
-
-/* Tooltip para eventos adicionales */
-.fc-more {
-    background-color: var(--primary-color) !important;
-    color: white !important;
-    border-radius: 4px !important;
-    padding: 2px 6px !important;
-    font-size: 0.8em !important;
-    cursor: pointer !important;
-    transition: background-color 0.2s ease !important;
-}
-
-.fc-more:hover {
-    background-color: var(--primary-dark) !important;
-}
-
-/* Colores personalizados para diferentes tipos de eventos */
-.fc-event.event-siembra {
-    background-color: var(--primary-color) !important;
-    border-left: 5px solid var(--primary-dark) !important;
-}
-
-.fc-event.event-cosecha {
-    background-color: var(--secondary-color) !important;
-    border-left: 5px solid var(--secondary-dark) !important;
-}
-
-.fc-event.event-riego {
-    background-color: var(--accent-blue) !important;
-    border-left: 5px solid var(--accent-blue-dark) !important;
-}
-
-/* Modal de eventos */
-.event-modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    animation: fadeIn 0.3s ease;
-    backdrop-filter: blur(2px);
-}
-
-.event-modal-content {
-    background-color: var(--background-white);
-    margin: 10% auto;
-    padding: 25px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    animation: slideIn 0.3s ease;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.close-modal {
-    position: absolute;
-    right: 20px;
-    top: 15px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
-    transition: color 0.2s ease, transform 0.1s ease;
-}
-
-.close-modal:hover {
-    color: #000;
-    transform: scale(1.2);
-}
-
-/* Animaciones */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideIn {
-    from { 
-        opacity: 0;
-        transform: translateY(-50px); 
-    }
-    to { 
-        opacity: 1;
-        transform: translateY(0); 
-    }
-}
-
-/* Responsive adjustments */
+/* Additional responsive and interactive improvements */
 @media (max-width: 768px) {
     #calendar {
-        padding: 10px;
-        margin: 10px;
+        padding: 15px;
+        margin: 15px;
+        border-radius: 12px;
     }
 
     .fc-header-toolbar {
         flex-direction: column;
         gap: 15px;
+        padding: 15px !important;
     }
 
     .fc-button {
-        padding: 8px 14px !important;
-        font-size: 0.8em !important;
+        width: 100%;
+        padding: 10px 16px !important;
     }
+}
 
-    .event-modal-content {
-        width: 95%;
-        margin: 5% auto;
+/* Soft scrollbar for event containers */
+.fc-day-grid .fc-event-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+
+.fc-day-grid .fc-event-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.fc-day-grid .fc-event-container::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.15);
+    border-radius: 4px;
+}
+
+/* Modal improvements */
+.event-modal {
+    display: none;
+    position: fixed;
+    z-index: 1100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 62, 80, 0.7);
+    backdrop-filter: blur(4px);
+    animation: modalFadeIn 0.3s ease;
+}
+
+.event-modal-content {
+    background-color: var(--background-white);
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 550px;
+    position: relative;
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.1), 
+        0 5px 15px rgba(0, 0, 0, 0.05);
+    animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+/* Enhanced animations */
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from { 
+        opacity: 0;
+        transform: translateY(-40px) scale(0.95); 
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0) scale(1); 
     }
 }

@@ -1,17 +1,32 @@
 .profile-container {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 40px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 50px;
+    background: linear-gradient(145deg, #ffffff, #f5f5f5);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
-    border: 1px solid #f0f0f0;
-  }
-  
-  .profile-container .profile-icon {
+    border: 1px solid rgba(76, 175, 80, 0.1);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.profile-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.profile-container .profile-icon {
     position: absolute;
     top: -60px;
     left: 50%;
@@ -24,40 +39,152 @@
     background-size: cover;
     background-position: center;
     border: 4px solid #fff;
-  }
-  
-  .profile-container h2 {
-    font-size: 24px;
-    color: #333;
-    font-family: 'Roboto', sans-serif;
-    margin-top: 80px;
-  }
-  
-  .profile-container p {
+}
+
+.profile-container h2 {
+    font-size: 32px;
+    color: #2c3e50;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.profile-container p {
     font-size: 16px;
     color: #666;
     font-family: 'Arial', sans-serif;
-  }
-  
-  .profile-container .bio {
+}
+
+.profile-container .bio {
     font-size: 14px;
     color: #888;
     margin-top: 10px;
-  }
-  
-  .profile-container button {
-    padding: 10px 20px;
-    margin-top: 20px;
-    background-color: #4caf50;
-    color: #fff;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
+}
+
+.profile-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #34495e;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
     font-size: 16px;
-    transition: background-color 0.3s;
-  }
-  
-  .profile-container button:hover {
-    background-color: #45a049;
-  }
-  
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.form-group input:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    outline: none;
+}
+
+.form-group input:hover {
+    border-color: #8BC34A;
+}
+
+.profile-container button {
+    grid-column: 1 / -1;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.profile-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    background: linear-gradient(135deg, #43A047, #7CB342);
+}
+
+.profile-container button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+}
+
+/* Animaciones y efectos */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 20px;
+        padding: 30px;
+    }
+
+    .profile-form {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-container h2 {
+        font-size: 24px;
+    }
+}
+
+/* Mensajes de validación */
+.form-group.error input {
+    border-color: #ff5252;
+}
+
+.form-group.success input {
+    border-color: #4CAF50;
+}
+
+.validation-message {
+    font-size: 12px;
+    margin-top: 5px;
+    color: #ff5252;
+    display: none;
+}
+
+.form-group.error .validation-message {
+    display: block;
+}
+
+/* Efectos de hover en los campos */
+.form-group::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: #4CAF50;
+    transition: all 0.3s ease;
+}
+
+.form-group:hover::after {
+    width: 100%;
+    left: 0;
+}

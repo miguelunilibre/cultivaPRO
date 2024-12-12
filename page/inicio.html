@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="../css/calendar.css">
     <link rel="stylesheet" href="../css/modal.css">
     <link rel="stylesheet" href="../css/cart.css">
+    <link rel="stylesheet" href="../css/cultivos.css">
+
 </head>
 <body>
     <div class="app">
@@ -139,6 +141,10 @@
                                     <option value="maiz">Maíz</option>
                                     <option value="sorgo">Sorgo</option>
                                     <option value="trigo">Trigo</option>
+                                    <option value="cebada">Cebada</option>
+                                    <option value="avena">Avena</option>
+                                    <option value="quinua">Quinua</option>
+                                    <option value="mijo">Mijo</option>
                                 </optgroup>
                                 <optgroup label="Leguminosas">
                                     <option value="frijol">Frijol</option>
@@ -146,12 +152,19 @@
                                     <option value="soya">Soya</option>
                                     <option value="garbanzo">Garbanzo</option>
                                     <option value="habichuela">Habichuela</option>
+                                    <option value="lenteja">Lenteja</option>
+                                    <option value="mani">Maní</option>
+                                    <option value="frijol_caupi">Frijol Caupí</option>
                                 </optgroup>
-                                <optgroup label="Tubérculos">
+                                <optgroup label="Tubérculos y Raíces">
                                     <option value="papa">Papa</option>
                                     <option value="yuca">Yuca</option>
                                     <option value="batata">Batata</option>
                                     <option value="name">Ñame</option>
+                                    <option value="arracacha">Arracacha</option>
+                                    <option value="papa_criolla">Papa Criolla</option>
+                                    <option value="yacon">Yacón</option>
+                                    <option value="malanga">Malanga</option>
                                 </optgroup>
                                 <optgroup label="Hortalizas">
                                     <option value="tomate">Tomate</option>
@@ -164,27 +177,59 @@
                                     <option value="coliflor">Coliflor</option>
                                     <option value="espinaca">Espinaca</option>
                                     <option value="pepino">Pepino</option>
+                                    <option value="ahuyama">Ahuyama</option>
+                                    <option value="calabacin">Calabacín</option>
+                                    <option value="rabano">Rábano</option>
+                                    <option value="remolacha">Remolacha</option>
+                                    <option value="acelga">Acelga</option>
+                                    <option value="apio">Apio</option>
+                                    <option value="cilantro">Cilantro</option>
+                                    <option value="perejil">Perejil</option>
                                 </optgroup>
-                                <optgroup label="Frutas">
+                                <optgroup label="Frutas Tropicales">
                                     <option value="platano">Plátano</option>
+                                    <option value="banano">Banano</option>
                                     <option value="aguacate">Aguacate</option>
                                     <option value="mango">Mango</option>
+                                    <option value="papaya">Papaya</option>
+                                    <option value="guayaba">Guayaba</option>
+                                    <option value="maracuya">Maracuyá</option>
+                                    <option value="granadilla">Granadilla</option>
+                                    <option value="lulo">Lulo</option>
+                                    <option value="mora">Mora</option>
+                                    <option value="uchuva">Uchuva</option>
+                                    <option value="pitaya">Pitaya</option>
+                                    <option value="guanabana">Guanábana</option>
+                                    <option value="anon">Anón</option>
+                                    <option value="borojo">Borojó</option>
+                                </optgroup>
+                                <optgroup label="Cítricos">
                                     <option value="naranja">Naranja</option>
                                     <option value="limon">Limón</option>
                                     <option value="mandarina">Mandarina</option>
-                                    <option value="maracuya">Maracuyá</option>
-                                    <option value="granadilla">Granadilla</option>
-                                    <option value="guayaba">Guayaba</option>
-                                    <option value="lulo">Lulo</option>
-                                    <option value="mora">Mora</option>
-                                    <option value="papaya">Papaya</option>
+                                    <option value="lima">Lima</option>
+                                    <option value="toronja">Toronja</option>
                                 </optgroup>
-                                <optgroup label="Otros">
+                                <optgroup label="Cultivos Industriales">
                                     <option value="cafe">Café</option>
                                     <option value="cacao">Cacao</option>
                                     <option value="cana">Caña de Azúcar</option>
-                                    <option value="tabaco">Tabaco</option>
+                                    <option value="palma_aceite">Palma de Aceite</option>
+                                    <option value="caucho">Caucho</option>
                                     <option value="algodon">Algodón</option>
+                                    <option value="tabaco">Tabaco</option>
+                                    <option value="stevia">Stevia</option>
+                                </optgroup>
+                                <optgroup label="Aromáticas y Medicinales">
+                                    <option value="albahaca">Albahaca</option>
+                                    <option value="manzanilla">Manzanilla</option>
+                                    <option value="menta">Menta</option>
+                                    <option value="oregano">Orégano</option>
+                                    <option value="tomillo">Tomillo</option>
+                                    <option value="romero">Romero</option>
+                                    <option value="calendula">Caléndula</option>
+                                    <option value="hierbabuena">Hierbabuena</option>
+                                    <option value="ruda">Ruda</option>
                                 </optgroup>
                             </select>
                         </div>
@@ -192,9 +237,31 @@
                             <label for="terreno">Tipo de Terreno:</label>
                             <select id="terreno" name="terreno" required>
                                 <option value="">Seleccione tipo de terreno</option>
-                                <option value="arcilloso">Arcilloso</option>
-                                <option value="arenoso">Arenoso</option>
-                                <option value="limoso">Limoso</option>
+                                <optgroup label="Suelos Minerales">
+                                    <option value="arcilloso">Arcilloso</option>
+                                    <option value="arenoso">Arenoso</option>
+                                    <option value="limoso">Limoso</option>
+                                    <option value="franco">Franco (Mixto)</option>
+                                    <option value="franco_arcilloso">Franco Arcilloso</option>
+                                    <option value="franco_arenoso">Franco Arenoso</option>
+                                    <option value="franco_limoso">Franco Limoso</option>
+                                </optgroup>
+                                <optgroup label="Suelos Orgánicos">
+                                    <option value="turboso">Turboso (Rico en materia orgánica)</option>
+                                    <option value="humifero">Humífero (Alto contenido de humus)</option>
+                                </optgroup>
+                                <optgroup label="Suelos por Región">
+                                    <option value="andisol">Andisol (Suelos volcánicos)</option>
+                                    <option value="vertisol">Vertisol (Suelos arcillosos profundos)</option>
+                                    <option value="oxisol">Oxisol (Suelos tropicales muy meteorizados)</option>
+                                    <option value="inceptisol">Inceptisol (Suelos jóvenes poco desarrollados)</option>
+                                </optgroup>
+                                <optgroup label="Características Especiales">
+                                    <option value="aluvial">Aluvial (Depósitos de río)</option>
+                                    <option value="calcareo">Calcáreo (Rico en carbonato de calcio)</option>
+                                    <option value="salino">Salino (Alto contenido de sales)</option>
+                                    <option value="pedregoso">Pedregoso (Con abundantes piedras)</option>
+                                </optgroup>
                             </select>
                         </div>
                         <div class="form-group">
@@ -262,10 +329,37 @@
                                     <div class="form-group">
                                         <label for="cropType">Tipo:</label>
                                         <select id="cropType" required>
-                                            <option value="hortaliza">Hortaliza</option>
-                                            <option value="cereal">Cereal</option>
-                                            <option value="fruta">Fruta</option>
-                                            <option value="legumbre">Legumbre</option>
+                                            <option value="">Seleccione tipo de cultivo</option>
+                                            <optgroup label="Cultivos Básicos">
+                                                <option value="hortaliza">Hortaliza</option>
+                                                <option value="cereal">Cereal</option>
+                                                <option value="fruta">Fruta</option>
+                                                <option value="legumbre">Legumbre</option>
+                                            </optgroup>
+                                            <optgroup label="Cultivos Especializados">
+                                                <option value="tuberculo">Tubérculo</option>
+                                                <option value="citrico">Cítrico</option>
+                                                <option value="aromatica">Aromática</option>
+                                                <option value="medicinal">Medicinal</option>
+                                                <option value="oleaginosa">Oleaginosa</option>
+                                            </optgroup>
+                                            <optgroup label="Cultivos Industriales">
+                                                <option value="fibra">Fibra (Algodón, Lino)</option>
+                                                <option value="estimulante">Estimulante (Café, Cacao)</option>
+                                                <option value="azucarero">Azucarero (Caña, Remolacha)</option>
+                                                <option value="biocombustible">Biocombustible (Palma)</option>
+                                            </optgroup>
+                                            <optgroup label="Cultivos de Forraje">
+                                                <option value="pasto">Pasto</option>
+                                                <option value="forraje_leguminosa">Forraje Leguminosa</option>
+                                                <option value="forraje_cereal">Forraje Cereal</option>
+                                            </optgroup>
+                                            <optgroup label="Otros Cultivos">
+                                                <option value="ornamental">Ornamental</option>
+                                                <option value="condimento">Condimento/Especia</option>
+                                                <option value="hongos">Hongos Comestibles</option>
+                                                <option value="cultivo_protegido">Cultivo Protegido</option>
+                                            </optgroup>
                                         </select>
                                     </div>
                                     <div class="form-group">
