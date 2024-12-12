@@ -533,10 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 crop.events.push(newEvent);
                 
-                // Actualizar estadísticas y guardar
-                const stats = this.calculateCropStats(crop);
-                crop.stats = stats;
-                
+                // Guardar cultivos sin modificar fechas de inicio y cosecha
                 this.saveCrops();
                 this.renderCrops();
 
@@ -686,7 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         $('#calendar').fullCalendar('removeEvents', `event_${eventId}`);
                     }
 
-                    // Recalcular la salud general
+                    // Recalcular salud general
                     this.updateCropHealth(crop);
 
                     this.saveCrops();
@@ -1339,20 +1336,60 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Mostrar el formulario correspondiente
             const selectedMethod = e.target.value;
-            document.getElementById(`${selectedMethod}Form`).classList.remove('hidden');
+            const currentForm = document.getElementById(`${selectedMethod}Form`);
+            currentForm.classList.remove('hidden');
             
             // Actualizar los campos requeridos
-            const currentForm = document.getElementById(`${selectedMethod}Form`);
             currentForm.querySelectorAll('input, select').forEach(input => {
                 input.required = true;
             });
             
             // Remover required de los otros formularios
-            document.querySelectorAll('.payment-method-form:not(#${selectedMethod}Form)').forEach(form => {
+            document.querySelectorAll(`.payment-method-form:not(#${selectedMethod}Form)`).forEach(form => {
                 form.querySelectorAll('input, select').forEach(input => {
                     input.required = false;
                 });
             });
+
+            // Mostrar mensaje si el método de pago no está disponible
+            if (selectedMethod !== 'nequi') {
+                currentForm.innerHTML = `
+                    <div class="unavailable-message">
+                        <p>El método de pago seleccionado no está disponible en este momento. Por favor, seleccione Nequi para realizar la compra.</p>
+                    </div>
+                `;
+                document.querySelector('.billing-address').style.display = 'none';
+                document.querySelector('.payment-submit-btn').disabled = true;
+            } else {
+                // Restaurar el formulario de Nequi si se selecciona
+                document.getElementById('nequiForm').innerHTML = `
+                    <div class="form-group">
+                        <label for="phoneNumber">Número de celular Nequi</label>
+                        <input type="tel" id="phoneNumber" placeholder="300 123 4567" required>
+                    </div>
+                `;
+                document.querySelector('.billing-address').style.display = 'block';
+                document.querySelector('.payment-submit-btn').disabled = false;
+            }
         });
+    });
+
+    // Mostrar mensaje de no disponible por defecto para métodos de pago no Nequi
+    document.querySelectorAll('.payment-method-form').forEach(form => {
+        if (form.id !== 'nequiForm') {
+            form.innerHTML = `
+                <div class="unavailable-message">
+                    <p>El método de pago seleccionado no está disponible en este momento. Por favor, seleccione Nequi para realizar la compra.</p>
+                </div>
+            `;
+        }
+    });
+
+    // Deshabilitar el botón de pago por defecto
+    document.querySelector('.billing-address').style.display = 'none';
+    document.querySelector('.payment-submit-btn').disabled = true;
+
+    document.querySelector('.close-payment').addEventListener('click', () => {
+        document.querySelector('.payment-modal').classList.add('hidden');
     });
 }); // Final del DOMContentLoaded
