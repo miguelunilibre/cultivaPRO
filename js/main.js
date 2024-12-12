@@ -714,29 +714,49 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.total-amount').forEach(el => {
                 el.textContent = `$${totalAmount.toFixed(2)}`;
             });
-            
+
+            // Mostrar modal de pago
             paymentModal.classList.remove('hidden');
-            
-            // Manejar el envío del formulario de pago
+
             const paymentForm = document.getElementById('paymentForm');
-            
-            const handlePaymentSubmit = async (e) => {
+
+            // Remover cualquier event listener previo para evitar duplicados
+            const newPaymentForm = paymentForm.cloneNode(true);
+            paymentForm.parentNode.replaceChild(newPaymentForm, paymentForm);
+
+            // Manejar el envío del formulario de pago
+            newPaymentForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
                 // Obtener el método de pago seleccionado
                 const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
                 
-                // Validar campos según el método de pago
+                // Limpiar errores previos
+                document.querySelectorAll('.payment-method-form input, .payment-method-form select')
+                    .forEach(input => input.classList.remove('error'));
+                
+                // 1. Validar solo los campos del método seleccionado
                 const currentForm = document.getElementById(`${selectedMethod}Form`);
-                const requiredInputs = currentForm.querySelectorAll('input[required], select[required]');
+                const methodInputs = currentForm.querySelectorAll('input[required], select[required]');
+                
+                // 2. Validar campos de dirección de facturación (comunes)
+                const billingInputs = document.querySelectorAll('.billing-address input[required]');
+                
                 let isValid = true;
                 
-                requiredInputs.forEach(input => {
+                // Validar campos del método de pago actual
+                methodInputs.forEach(input => {
                     if (!input.value.trim()) {
                         isValid = false;
                         input.classList.add('error');
-                    } else {
-                        input.classList.remove('error');
+                    }
+                });
+                
+                // Validar campos de facturación
+                billingInputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('error');
                     }
                 });
                 
@@ -767,21 +787,50 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('¡Pago procesado exitosamente! Gracias por tu compra.');
                     
                     // Resetear formulario
-                    paymentForm.reset();
+                    newPaymentForm.reset();
                     
                 } catch (error) {
-                    alert('Error al procesar el pago. Por favor intente nuevamente.');
+                    alert('Error al procesar el pago. Por favor intenta nuevamente.');
                 } finally {
                     // Restaurar botón
                     submitBtn.innerHTML = originalBtnText;
                     submitBtn.disabled = false;
                 }
-            };
-            
-            // Remover evento anterior si existe
-            paymentForm.removeEventListener('submit', handlePaymentSubmit);
-            // Agregar nuevo evento
-            paymentForm.addEventListener('submit', handlePaymentSubmit);
+            });
+
+            // Manejo de cambio de método de pago para mostrar/ocultar formularios
+            document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const selectedMethod = e.target.value;
+                    
+                    // Ocultar todos los formularios de métodos de pago
+                    document.querySelectorAll('.payment-method-form').forEach(form => {
+                        form.classList.add('hidden');
+                        
+                        // Remover 'required' de los campos
+                        form.querySelectorAll('input, select').forEach(input => {
+                            input.required = false;
+                        });
+                    });
+                    
+                    // Mostrar el formulario correspondiente
+                    const selectedForm = document.getElementById(`${selectedMethod}Form`);
+                    selectedForm.classList.remove('hidden');
+                    
+                    // Agregar 'required' solo a los campos del formulario seleccionado
+                    selectedForm.querySelectorAll('input, select').forEach(input => {
+                        input.required = true;
+                    });
+                });
+            });
+
+            // **Nueva línea añadida para inicializar el método preseleccionado**
+            const preselectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
+            if (preselectedMethod) {
+                preselectedMethod.dispatchEvent(new Event('change'));
+            }
+
+            paymentModal.classList.remove('hidden');
         }
     };
 
